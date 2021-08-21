@@ -47,7 +47,7 @@
 
 ## ライセンス
 
-BSD 3-Clause License ([LISENCE](LISENCE)参照)
+BSD 3-Clause License ([LICENSE](LICENSE)参照)
 
 ## 問い合わせ / Contact
 
