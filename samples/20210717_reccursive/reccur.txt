@@ -1,0 +1,11 @@
+inn inn inn      #[a,b,x
+:reccur          #[a,b,x
+push3 push2 roll #[b,x,a
+dup              #[b,x,a,a
+push4 push3 roll #[x,a,a,b
+dup              #[x,a,a,b,b
+push5 push3 roll #[a,b,b,x,a
+mul add          #[a,b,a*x+b(=>x)
+:print
+outn pop pop     #[
+end

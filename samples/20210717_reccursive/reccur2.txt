@@ -1,0 +1,20 @@
+inn inn inn inn  #[n,a,b,x
+:reccur_loop     #[n,a,b,x
+dup outn         #[n,a,b,x ==> x
+push4 dup mul push2 mul outc #[n|a,b,x ==>' '
+:reccur          #[...|a,b,x
+push3 push2 roll #[...|b,x,a
+dup              #[...|b,x,a,a
+push4 push3 roll #[...|x,a,a,b
+dup              #[...|x,a,a,b,b
+push5 push3 roll #[...|a,b,b,x,a
+mul add          #[...|a,b,a*x+b(=>x)
+:reccur_loop_jud #[n|a,b,x
+push4 push3 roll #[a,b,x,n
+push1 sub        #[a,b,x,n-1(=>n)
+dup if::end      #[a,b,x,n
+push4 push1 roll #[n,a,b,x
+goto:reccur_loop #[n,a,b,x
+:end
+pop pop pop pop  #[
+end

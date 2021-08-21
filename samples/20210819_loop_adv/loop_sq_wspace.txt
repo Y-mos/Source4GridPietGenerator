@@ -1,0 +1,10 @@
+push3 dup mul     #1
+:loop
+dup if::end
+dup dup mul outn  #2-1
+push2 dup dup add #2-2
+dup mul mul outc  #2-3
+push1 sub
+goto:loop
+:end
+end

@@ -1,0 +1,25 @@
+inn inn inn inn inn  #[m,n,a,b,x
+:rand_loop           #[m,n,a,b,x
+push5 push4 roll     #[n,a,b,x,m
+dup                  #[n,a,b,x,m,m
+push6 push1 roll     #[m,n,a,b,x,m
+mod                  #[m,n,a,b,x%m(=>x)
+:print               #[m,n,a,b,x
+dup outn             #[m,n,a,b,x ==> x
+push4 dup mul push2 mul outc #[m,n|a,b,x ==>' '
+:reccur              #[...|a,b,x
+push3 push2 roll     #[...|b,x,a
+dup                  #[...|b,x,a,a
+push4 push3 roll     #[...|x,a,a,b
+dup                  #[...|x,a,a,b,b
+push5 push3 roll     #[...|a,b,b,x,a
+mul add              #[...|a,b,a*x+b(=>x)
+:rand_loop_jud       #[n|a,b,x
+push4 push3 roll     #[a,b,x,n
+push1 sub            #[a,b,x,n-1(=>n)
+dup if::end          #[a,b,x,n
+push4 push1 roll     #[n,a,b,x
+goto:rand_loop       #[n,a,b,x
+:end
+pop pop pop pop  #[
+end

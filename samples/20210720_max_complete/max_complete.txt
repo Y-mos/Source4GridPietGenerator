@@ -1,0 +1,189 @@
+push1 dup sub dup #[M(=0):N(=0)
+:input            #[...|N
+inc dup           #[...|N,p,p
+push4 push1 push2 push5 mul add mul sub
+                  #[...|N,p,p-','
+if::do_atoi       #[...|N,p
+dup               #[...|N,p,p
+push3 push4 push5 mul mul push1 sub sub
+                  #[...|N,p,p,';'
+if::calc_max      #[...|N,p
+push2 push1 roll  #[...|p:N
+push1 add         #[...:p(=>a_N)|N+1(=>N)
+goto:input        #[...|N
+:do_atoi          #[...|N,p
+pop               #[...:a_1,...,a_N|N
+########################################
+## atoi
+##  [...|i_1,...,i_N,N
+##  ==> [...|i
+## *a_n=[-+0-9]
+########################################
+:atoi            #[...|i_1,...,i_N,N
+########################################
+## reverse
+##  [...|i_1,...,i_N,N
+##  ==> [...|i_N,...,i_1,N
+########################################
+:reverse         #[...|i_1,...,i_N,N
+dup              #[...|i_1,...,i_N(=>i_n),N,N(=>n)
+:reverse_loop    #[...|i_1,...,i_n,N,n
+dup              #[...|i_1,...,i_n,N,n,n
+push3 push1 roll #[...|i_1,...,i_n,n,N,n
+push1 sub        #[...|i_1,...,i_n,n,N,n-1
+push4 push2 roll #[...|i_1,...,N,n-1,i_n,n
+push2 add push1  #[...|i_1,...,N,n-1,i_n,n+2,1
+roll             #[...|i_n:i_1,...,i_{n-1},N,n-1
+dup              #[...:i_n|i_1,...,i_{n-1},N,n-1,n-1
+if:reverse_loop:reverse_end
+                 #[...|i_1,...,i_{n-1}(=>i_n),N,n-1(=>n)
+:reverse_end     #[...|i_N,...,i_1,N,n
+pop              #[...|i_N,...,i_1,N
+########################################
+## /reverse
+########################################
+:atoi_issign     #[...|i_N(=>i_1),...,i_1(=>i_N),N
+push2 push1 roll #[...|i_1,...,N,i_N
+dup              #[...|i_1,...,N,i_N,i_n
+push3 push1 roll #[...|i_1,...,i_N,N,i_n(=>es)
+:atoi_isplus     #[...|i_1,...,i_N,N,es
+dup              #[...|i_1,...,i_N,N,es,es
+push6 dup push1 add mul push1 add
+                 #[...|i_1,...,i_N,N,es,es'+'
+sub if:atoi_isminus:
+                 #[...|i_1,...,i_N,N,es
+pop              #[...|i_1,...,i_N,N
+push1            #[...|i_1,...,i_N,N,s(=1)
+goto:atoi_ignore_1st
+                 #[...|i_1,...,i_N,N,s
+:atoi_isminus    #[...|i_1,...,i_N,N,es
+dup              #[...|i_1,...,i_N,N,es,es
+push3 dup push5 mul mul
+                 #[...|i_1,...,i_N,N,es,es'-'
+sub if:atoi_nosign:
+                 #[...|i_1,...,i_N,N,es
+pop              #[...|i_1,...,i_N,N
+push1 push2 sub  #[...|i_1,...,i_N,N,s(=-1)
+goto:atoi_ignore_1st
+                 #[...|i_1,...,i_N,N,s
+
+:atoi_nosign     #[...|i_1,...,i_N,N,es
+pop dup push1    #[...|i_1,...,i_N,N,N,s(=1)
+goto:atoi_push_s #[...|i_1,...,i_N,N,N,s
+:atoi_ignore_1st #[...|i_1,...,i_N,N,s
+push3 push1 roll #[...|i_1,...,i_{N-1},s,i_N,N
+push1 sub        #[...|i_1,...,i_{N-1}(=>i_N),s,i_N(=>G),N-1(=>N)
+dup              #[...|i_1,...,i_N,s,G,N,N
+push4 push2 roll #[...|i_1,...,i_N,N,N,s,G
+pop              #[...|i_1,...,i_N,N,N,s
+goto:atoi_push_s #[...|i_1,...,i_N,N,N,s
+:atoi_push_s     #[...|i_1,...,i_N,N,N,s
+push2 push1 roll #[...|i_1,...,i_N,N,s,N
+push2 add push1  #[...|i_1,...,i_N,N,s,N+2,1
+roll             #[...|s,i_1,...,i_N,N
+goto:atoi_pre    #[...|s,i_1,...,i_N(=>i_n),N(=>n)
+
+:atoi_pre        #[...|s,i_1,...,i_n,n
+push1 dup sub    #[...|s:i_1,...,i_n,n,r(=0)
+push2 push1 roll #[...:s|i_1,...,i_n,r,n
+:atoi_loop       #[...|i_1,...,i_n,r,n
+dup if::atoi_end #[...|i_1,...,i_n,r,n
+push3 push2 roll #[...|i_1,...,r,n,i_n
+push3 push4 dup mul mul sub
+                 #[...|i_1,...,r,n,i_n-'0'(=>v)
+dup dup if::atoi_calc
+                 #[...|i_1,...,r,n,v,v(=>v')  #v==0?
+push1 sub dup if::atoi_calc
+                 #[...|i_1,...,r,n,v,v'-1(=>v')  #v==1?
+push1 sub dup if::atoi_calc
+                 #[...|i_1,...,r,n,v,v'-1(=>v')  #v==2?
+push1 sub dup if::atoi_calc
+                 #[...|i_1,...,r,n,v,v'-1(=>v')  #v==3?
+push1 sub dup if::atoi_calc
+                 #[...|i_1,...,r,n,v,v'-1(=>v')  #v==4?
+push1 sub dup if::atoi_calc
+                 #[...|i_1,...,r,n,v,v'-1(=>v')  #v==5?
+push1 sub dup if::atoi_calc
+                 #[...|i_1,...,r,n,v,v'-1(=>v')  #v==6?
+push1 sub dup if::atoi_calc
+                 #[...|i_1,...,r,n,v,v'-1(=>v')  #v==7?
+push1 sub dup if::atoi_calc
+                 #[...|i_1,...,r,n,v,v'-1(=>v')  #v==8?
+push1 sub dup if::atoi_calc
+                 #[...|i_1,...,r,n,v,v'-1(=>v')  #v==9?
+goto:atoi_value_error
+                 #[...|i_1,...,i_{n-1},r,n,v,v'
+:atoi_calc       #[...|i_1,...,r,n,v,v'
+pop              #[...|i_1,...,r,n,v
+push3 push2 roll #[...|i_1,...,n,v,r
+push2 push5 mul  #[...|i_1,...,n,v,r,10
+mul add          #[...|i_1,...,n,10*r+v(=>r)
+push2 push1 roll #[...|i_1,...,i_{n-1},r,n
+push1 sub        #[...|i_1,...,i_{n-1}(=>i_n),r,n-1(=>n)
+goto:atoi_loop   #[...|i_1,...,i_n,r,n
+
+:atoi_value_error
+                 #[...|i_1,...,i_{n-1},r,n,v,v'
+pop pop          #[...|i_1,...,i_{n-1},r,n
+push2 push1 roll #[...|i_1,...,i_{n-1},n,r
+pop push1 sub    #[...|i_1,...,i_{n-1}(=>i_n),n-1(=>n)
+:atoi_value_error_loop
+                 #[...|i_1,...,i_n,n
+dup if::atoi_value_error_end
+                 #[...|i_1,...,i_{n-1},i_n,n
+push2 push1 roll #[...|i_1,...,i_{n-1},n,i_n
+pop push1 sub    #[...|i_1,...,i_{n-1}(=>i_n),n-1(=>n)
+goto:atoi_value_error_loop
+:atoi_value_error_end
+                 #[...|n(=>r)(==0)
+dup goto:atoi_end
+                 #[...|r(==0),n(=0)
+
+:atoi_end        #[...|r,n(=0)
+pop              #[...:s|r
+mul              #[...|s*r(=>r)
+########################################
+## /atoi
+########################################
+push2 push1 roll #[...,r|M
+push1 add        #[...|M+1(=>M)
+push1 dup sub    #[...|M:N(=0)
+goto:input
+
+:calc_max         #[...:M|N,p(==';')
+pop pop           #[...:a_1,...,a_M(=>a_N)|M(=>N)
+########################################
+## max
+##  [...|a_1,...,a_N,N
+##  ==> [...|max(a_n)
+########################################
+:max             #[...|a_1,...,a_N:N
+push2 push1 roll #[...|a_1,...,N,a_N
+dup              #[...|a_1,...,N,a_N,a_N(=>r)
+push3 push2 roll #[...|a_1,...,a_N,r,N
+dup              #[...|a_1,...,a_N(=>a_c),r,N,N(=>c)
+
+:max_loop        #[...|a_1,...,a_c,r,N,c
+dup if::max_end  #[...|a_1,...,a_{c-1},a_c(=>s),r,N,c
+push1 sub        #[...|a_1,...,a_{c-1}(=>a_c),s,r,N,c-1(=>c)
+push4 push2 roll #[...|a_1,...,a_c,N,c,s,r
+dup              #[...|a_1,...,a_c,N,c,s,r,r
+push3 push2 roll #[...|a_1,...,a_c,N,c,r,r,s
+dup              #[...|a_1,...,a_c,N,c,r,r,s,s
+push3 push1 roll #[...|a_1,...,a_c,N,c,r,s,r,s
+gt if:max_nop:   #[...|a_1,...,a_c,N,c,r,s
+push2 push1 roll #[...|a_1,...,a_c,N,c,s(=>r),r(=>s)
+:max_nop         #[...|a_1,...,a_c,N,c,r,s
+pop              #[...|a_1,...,a_c,N,c,r
+push3 push1 roll #[...|a_1,...,a_c,r,N,c
+goto:max_loop    #[...|a_1,...,a_c,r,N,c
+
+:max_end         #[...|r,N,c
+pop pop          #[...|r
+########################################
+## /max
+########################################
+
+:output          #[...|r
+outn             #[...|   ==>r
+end

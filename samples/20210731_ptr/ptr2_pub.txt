@@ -1,0 +1,160 @@
+:len_mem
+push4 push2 push6 push3
+:num_mem
+push4
+:sum_mem
+push15
+:push_address
+inn inn
+########################################
+## ptr
+########################################
+:ptr
+:ptr_check_m
+push4 push1 roll dup
+push5 push3 roll dup
+push6 push1 roll push1 add
+push3 push2 roll
+push1 dup sub push3 push1
+goto:ptr_inorder
+:ptr_inorder_ret1
+if::ptr_err
+
+:ptr_check_n
+push1
+goto:ptr_sub_R
+:ptr_sub_R_ret1
+dup push5 add push1 push2 sub roll dup
+push3 push2 roll
+push5 add push1 roll push1 add
+push2 push1 roll dup
+push3 push1 roll
+push1 push2 sub push3 push2
+goto:ptr_inorder
+:ptr_inorder_ret2
+if::ptr_err
+
+:ptr_calc
+push2
+goto:ptr_sub_R
+:ptr_sub_R_ret2
+dup dup push7 push6 roll dup dup dup
+push10 push1 roll
+push5 push1 roll
+push3 push1 roll
+push9 add push2 roll
+:ptr_emb_num_mems
+push5 push4 roll dup
+push6 push1 roll push1 sub
+push2 push1 roll
+push7 add push1 roll
+
+:ptr_move2top
+push7 add push2 push1 roll
+push4 add roll
+
+goto:ptr_sum
+:ptr_sum_ret
+push2 push1 roll dup
+push3 push1 roll
+push4 add push1 roll
+:ptr_prep_rewind
+push2 add push1 push3 sub roll
+:ptr_rewind
+push5 add push1 push2 sub mul
+push2 push1 roll
+push5 add push2 push1 roll
+roll
+:ptr_add_ofs
+push2 push1 roll dup
+push3 push1 roll add
+:ptr_dup_N
+push4 push3 roll dup
+push5 push1 roll
+:ptr_dup_M
+push6 push5 roll dup
+push7 push1 roll push1
+goto:ptr_end
+
+:ptr_err
+push1 dup sub dup dup dup
+goto:ptr_end
+
+:ptr_sub_R
+push5 push1 roll
+push4 push3 roll dup
+push4 push3 roll dup
+push5 push1 roll
+sub push1 add push2 push1 roll
+push5 push1 roll
+push6 push5 roll
+push1 sub
+if:ptr_sub_R_ret2:ptr_sub_R_ret1
+
+:ptr_sum
+########################################
+## sum
+########################################
+:sum
+dup push1 dup sub
+push3 push1 roll
+:sum_loop
+dup if::sum_end
+push4 push2 roll
+push2 push1 roll dup
+push5 push1 roll add
+push3 push1 roll
+push1 sub
+push3 push1 roll dup
+push4 push3 roll
+push5 push4 roll
+push3 push2 roll
+push3 add push1 roll
+goto:sum_loop
+
+:sum_end
+pop push2 push1 roll
+########################################
+## /sum
+########################################
+goto:ptr_sum_ret
+
+:ptr_inorder
+push2 push1 roll dup
+push3 push1 roll
+push2 add push1 roll
+########################################
+## inorder
+########################################
+:inorder
+push1
+push2 push1 roll
+dup if::inorder_err
+:inorder_loop
+dup push1 sub
+if::inorder_end
+push4 push3 roll dup
+push5 push4 roll gt
+push4 push3 roll mul
+push3 push2 roll
+push1 sub
+goto:inorder_loop
+:inorder_err
+pop pop push1 dup sub dup dup
+:inorder_end
+push3 push2 roll pop pop
+########################################
+## inorder
+########################################
+push2 push1 roll
+push1 sub
+if:ptr_inorder_ret2:ptr_inorder_ret1
+
+:ptr_end
+########################################
+## /ptr
+########################################
+outn push4 dup push2 mul mul outc
+outn push4 dup push2 mul mul outc
+outn push4 dup push2 mul mul outc
+outn end

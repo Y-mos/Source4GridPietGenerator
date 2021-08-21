@@ -1,0 +1,42 @@
+push1 dup sub     #[N(=0)
+:ci_input         #[...|N
+inn               #[...|N,p
+dup push1 dup sub #[...|N,p,p,0
+gt if::ci_input_end  #[...|N,p
+push2 push1 roll  #[...|p:N
+push1 add         #[...:p(=>a_N)|N+1(=>N)
+goto:ci_input     #[...|N
+:ci_input_end     #[...|N,p
+pop               #[...|a_1,...,a_N,N
+########################################
+## inorder
+##  [...|a_1,...,a_N,N
+##  ==> [...|(a_1>a_2 && ...,a_{N-1}>a_N)
+########################################
+:inorder            #[...|a_1,...,a_N,N
+push1               #[...|a_1,...,a_N(=>a_n),N(=>n),R(=1)
+push2 push1 roll    #[...|a_1,...,a_n,R,n
+dup if::inorder_err #[...|a_1,...,a_n,R,n
+:inorder_loop       #[...|a_1,...,a_n,R,n
+dup push1 sub       #[...|a_1,...,a_n,R,n,n-1
+if::inorder_end     #[...|a_1,...,a_{n-1},a_n,R,n
+push4 push3 roll    #[...|a_1,...,a_n,R,n,a_{n-1}
+dup                 #[...|a_1,...,a_n,R,n,a_{n-1},a_{n-1}
+push5 push4 roll    #[...|a_1,...,R,n,a_{n-1},a_{n-1},a_n
+gt                  #[...|a_1,...,R,n,a_{n-1},a_{n-1}>a_n(=>J)
+push4 push3 roll    #[...|a_1,...,n,a_{n-1},J,R
+mul                 #[...|a_1,...,n,a_{n-1},J*R(=>R)
+push3 push2 roll    #[...|a_1,...,a_{n-1},R,n
+push1 sub           #[...|a_1,...,a_{n-1}(=>a_n),R,n-1(=>n)
+goto:inorder_loop   #[...|a_1,...,a_n,R,n
+:inorder_err        #[...|R,n(==0)
+pop pop             #[...|
+push1 dup sub       #[...|a_1(=0)
+dup dup             #[...|a_1,R(=0),n(=0)
+:inorder_end        #[...|a_1,R,n(==0)
+push3 push2 roll    #[...|R,n,a_1
+pop pop             #[...|R
+########################################
+## inorder
+########################################
+outn end            #[...| ==>R

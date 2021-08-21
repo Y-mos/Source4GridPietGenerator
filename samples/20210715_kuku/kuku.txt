@@ -1,0 +1,45 @@
+# kuku
+push1 dup sub       #[0
+inn dup inn         #[0|n,n,m
+:mloop              #[...|n(=>n'),n,m
+push2 push1 roll    #[...|n',m,n
+:nloop              #[...|n',m,n
+dup                 #[...|n',m,n,n
+push3 push2 roll    #[...|n',n,n,m
+dup                 #[...|n',n,n,m,m
+push4 push1 roll    #[...|n',m,n,n,m
+mul                 #[...|n',m,n,n*m
+push4 push1 roll    #[...|n*m:n',m,n
+push2 dup dup mul dup mul mul #[...:n*m|n',m,n,32(<=>' ')
+push1 push2 sub mul #[...|n',m,n,-32
+push4 push1 roll    #[...|-32:n',m,n
+push1 sub           #[...:-32|n',m,n-1(=>n)
+dup if:nloop:       #[...|n',m,n
+pop                 #[...|n',m
+push1 sub           #[...|n',m-1(=>m)
+dup if::print       #[...|n',m
+push2 push1 roll    #[...|m,n'
+dup                 #[...|m,n',n'
+push3 push1 roll    #[...|n',m,n'(=>n)
+push1 push3 push4 mul add #[...|n',m,n,13(<=>'\0x0D')
+push1 push2 sub mul #[...|n',m,n,-13
+push2 push5 mul     #[...|n',m,n,-13,10(<=>'\0x0A')
+push1 push2 sub mul #[...|n',m,n,-13,-10
+push5 push2 roll    #[...|-13,-10:n',m,n
+goto:nloop
+
+:print              #[...:v|n',m
+pop pop             #[...|v:
+:print_loop         #[...|v
+dup if::end         #[...|v
+dup push1 push1 sub #[...|v,v,0
+gt if:loutn:loutc   #[...|v
+:loutn              #[...:nv|v
+outn                #[...|nv(=>v):
+goto:print_loop     #[...|v
+:loutc              #[...:nv|v
+push1 push2 sub mul #[...|nv,-v
+outc                #[...|nv(=>v):
+goto:print_loop     #[...|v
+:end
+end

@@ -1,0 +1,46 @@
+push1 dup sub     #[N(=0)
+:ci_input         #[...|N
+inn               #[...|N,p
+dup push1 dup sub #[...|N,p,p,0
+gt if::ci_input_end  #[...|N,p
+push2 push1 roll  #[...|p:N
+push1 add         #[...:p(=>a_N)|N+1(=>N)
+goto:ci_input     #[...|N
+:ci_input_end     #[...|N,p
+pop               #[...|a_1,...,a_N,N
+########################################
+## sum
+##  [...|a_1,...,a_N,N
+##  ==> [...|a_1,...,a_N,N,a_1+...+a_N
+########################################
+:sum              #[...|a_1,...,a_N,N
+dup               #[...|a_1(=>a_{n+1}),...,a_N(=>a_n),N,N(=>n)
+push1 dup sub     #[...|a_{n+1},...,a_n,N,n,S(=0)
+push3 push1 roll  #[...|a_{n+1},...,a_n,S,N,n
+:sum_loop         #[...|a_{n+1},...,a_n,S,N,n
+dup if::sum_end   #[...|a_{n+1},...,a_n,S,N,n
+push4 push2 roll  #[...|a_{n+1},...,N,n,a_n,S
+push2 push1 roll  #[...|a_{n+1},...,N,n,S,a_n
+dup               #[...|a_{n+1},...,N,n,S,a_n,a_n
+push5 push1 roll  #[...|a_{n+1},...,a_n,N,n,S,a_n
+add               #[...|a_{n+1},...,a_n,N,n,S+a_n(=>S)
+push3 push1 roll  #[...|a_{n+1},...,a_n,S,N,n
+push1 sub
+      #[...|a_{n+1}(=>a_{n+2}),...,a_n(=>a_{n+1}),S,N,n-1(=>n)
+push3 push1 roll  #[...|a_{n+2},...,a_{n+1},n,S,N
+dup               #[...|a_{n+2},...,a_n,a_{n+1},n,S,N,N
+push4 push3 roll  #[...|a_{n+2},...,a_n,a_{n+1},S,N,N,n
+push5 push4 roll  #[...|a_{n+2},...,a_n,S,N,N,n,a_{n+1}
+push3 push2 roll  #[...|a_{n+2},...,a_n,S,N,n,a_{n+1},N
+push3 add push1   #[...|a_{n+2},...,a_n,S,N,n,a_{n+1},N+3,1
+roll              #[...|a_{n+1},...,a_n,S,N,n
+goto:sum_loop     #[...|a_{n+1},...,a_n,S,N,n
+
+:sum_end          #[...|a_1,...,a_N,S,N,n
+pop               #[...|a_1,...,a_N,S,N
+push2 push1 roll  #[...|a_1,...,a_N,N,S
+########################################
+## /sum
+########################################
+outn             #[...|a_1,...,a_N,N ==>S
+end              #[...|a_1,...,a_N,N
