@@ -1,0 +1,15 @@
+push1 dup sub     #1-1
+push3 dup mul     #1
+:loop
+dup if::end
+dup               #2-1
+push3 push2 roll  #2-2
+add               #2-3
+dup outn          #2
+push2 dup dup add #2-4
+dup mul mul outc  #2-5
+push2 push1 roll  #2-6
+push1 sub         #3
+goto:loop
+:end
+pop outn end
