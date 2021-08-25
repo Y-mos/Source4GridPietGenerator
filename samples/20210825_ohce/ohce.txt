@@ -1,0 +1,15 @@
+push1 not
+:input_loop
+inc dup
+push2 dup dup mul dup mul mul
+gt if:input_loop:output
+
+:output
+pop
+:output_loop
+dup if::end
+outc
+goto:output_loop
+
+:end
+pop end

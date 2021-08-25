@@ -1,0 +1,13 @@
+inn inn # minutes
+add dup
+push2 dup push3 push5 mul mul mul
+dup
+push3 push1 roll
+mod
+push3 push1 roll
+div
+outn
+push1 push2 push3 dup mul mul add push3 mul push1 add
+outc
+outn
+end

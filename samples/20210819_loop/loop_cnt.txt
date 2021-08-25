@@ -5,4 +5,4 @@ dup outn       #2
 push1 sub
 goto:loop
 :end
-end
+pop end
